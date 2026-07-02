@@ -15,6 +15,7 @@ build:
     env:
       CARGO_PROFILE_RELEASE_LTO: fat
       CARGO_PROFILE_RELEASE_STRIP: symbols
+      # force CMake builder for `aws-lc-sys` native C code, required to make cross-compilation work
       AWS_LC_SYS_CMAKE_BUILDER: "1"
     content:
       # NOTE: we have to set LIBCLANG_PATH for bindgen to find libclang (used by aws-lc-rs)
@@ -24,10 +25,12 @@ build:
           - export LIBCLANG_PATH="$BUILD_PREFIX"/lib
           - cargo auditable install --path=. --root="$PREFIX" --no-track --locked --bins
           # generate shell completions
-          - mkdir -p "$PREFIX"/share/bash-completion/completions "$PREFIX"/share/fish/vendor_completions.d "$PREFIX"/share/zsh/site-functions
-          - '"$PREFIX"/bin/fnox completion bash > "$PREFIX"/share/bash-completion/completions/fnox'
-          - '"$PREFIX"/bin/fnox completion fish > "$PREFIX"/share/fish/vendor_completions.d/fnox.fish'
-          - '"$PREFIX"/bin/fnox completion zsh  > "$PREFIX"/share/zsh/site-functions/_fnox'
+          - if: build_platform == host_platform
+            then:
+              - mkdir -p "$PREFIX"/share/bash-completion/completions "$PREFIX"/share/fish/vendor_completions.d "$PREFIX"/share/zsh/site-functions
+              - '"$PREFIX"/bin/fnox completion bash > "$PREFIX"/share/bash-completion/completions/fnox'
+              - '"$PREFIX"/bin/fnox completion fish > "$PREFIX"/share/fish/vendor_completions.d/fnox.fish'
+              - '"$PREFIX"/bin/fnox completion zsh  > "$PREFIX"/share/zsh/site-functions/_fnox'
       - if: win
         then:
           # bindgen expects libclang.dll; conda-forge only provides versioned DLLs on Windows
@@ -35,12 +38,14 @@ build:
           - set "LIBCLANG_PATH=%BUILD_PREFIX%\Library\bin"
           - cargo auditable install --path=. --root="%LIBRARY_PREFIX%" --no-track --locked --bins
           # generate shell completions
-          - if not exist "%LIBRARY_PREFIX%"\share\bash-completion\completions mkdir "%LIBRARY_PREFIX%"\share\bash-completion\completions
-          - if not exist "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d   mkdir "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d
-          - if not exist "%LIBRARY_PREFIX%"\share\zsh\site-functions          mkdir "%LIBRARY_PREFIX%"\share\zsh\site-functions
-          - '"%LIBRARY_BIN%"\fnox.exe completion bash > "%LIBRARY_PREFIX%"\share\bash-completion\completions\fnox'
-          - '"%LIBRARY_BIN%"\fnox.exe completion fish > "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d\fnox.fish'
-          - '"%LIBRARY_BIN%"\fnox.exe completion zsh  > "%LIBRARY_PREFIX%"\share\zsh\site-functions\_fnox'
+          - if: build_platform == host_platform
+            then:
+              - if not exist "%LIBRARY_PREFIX%"\share\bash-completion\completions mkdir "%LIBRARY_PREFIX%"\share\bash-completion\completions
+              - if not exist "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d   mkdir "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d
+              - if not exist "%LIBRARY_PREFIX%"\share\zsh\site-functions          mkdir "%LIBRARY_PREFIX%"\share\zsh\site-functions
+              - '"%LIBRARY_BIN%"\fnox.exe completion bash > "%LIBRARY_PREFIX%"\share\bash-completion\completions\fnox'
+              - '"%LIBRARY_BIN%"\fnox.exe completion fish > "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d\fnox.fish'
+              - '"%LIBRARY_BIN%"\fnox.exe completion zsh  > "%LIBRARY_PREFIX%"\share\zsh\site-functions\_fnox'
       - cargo-bundle-licenses --format=yaml --output=./THIRDPARTY.yml
 
 requirements:
@@ -64,18 +69,20 @@ requirements:
 
 tests:
   - script:
-      - fnox --help
-      - fnox --version
+      - if: build_platform == host_platform
+        then:
+          - fnox --help
+          - fnox --version
   - package_contents:
       bin:
         - fnox
       files:
-        - if: unix
+        - if: unix and build_platform == host_platform
           then:
             - share/bash-completion/completions/fnox
             - share/fish/vendor_completions.d/fnox.fish
             - share/zsh/site-functions/_fnox
-        - if: win
+        - if: win and build_platform == host_platform
           then:
             - Library/share/bash-completion/completions/fnox
             - Library/share/fish/vendor_completions.d/fnox.fish
