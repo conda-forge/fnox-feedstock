@@ -13,12 +13,12 @@ build:
   number: 1
   script:
     env:
-      AWS_LC_SYS_CMAKE_BUILDER: "1" # force CMake builder for `aws-lc-sys` native C code, required to make cross-compilation work
+      AWS_LC_SYS_CMAKE_BUILDER: ${{ "1" if host_platform == "win-arm64" else "0" }} # force CMake builder for `aws-lc-sys` native C/C++ code on `win-arm64`
       CARGO_PROFILE_RELEASE_LTO: ${{ "fat" if build_platform == host_platform else "thin" }}
       CARGO_PROFILE_RELEASE_STRIP: symbols
       OPENSSL_DIR: $PREFIX # force using host's (conda-forge's) OpenSSL lib dir
       OPENSSL_NO_VENDOR: "1" # force linking to host's (conda-forge's) OpenSSL libs
-      PKG_CONFIG_ALLOW_CROSS: "1" # ignore `pkg-config` crate's host-target mismatch safeguard
+      PKG_CONFIG_ALLOW_CROSS: "1" # ignore `pkg-config` crate's host-target mismatch safeguard to fix cross compilation
     content:
       # NOTE: we have to set LIBCLANG_PATH for bindgen to find libclang (used by aws-lc-rs)
       # cf. https://github.com/conda-forge/clangdev-feedstock/issues/373 & https://github.com/rust-lang/rust-bindgen/issues/918
