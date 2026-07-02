@@ -1,5 +1,5 @@
 context:
-  version: "1.27.1"
+  version: "1.29.0"
 
 package:
   name: fnox
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/jdx/fnox/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 17fbd495ad626ecd2bc7eb85a632d5e6875a49a6effa7a7aa6fafb9359ae7640
+  sha256: f25393fc2769f7916698d858b315244db34cc388c582399257f61cf4ebdd0981
 
 build:
   number: 0
