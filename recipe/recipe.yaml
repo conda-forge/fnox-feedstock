@@ -1,5 +1,5 @@
 context:
-  version: "1.32.0"
+  version: "1.33.0"
 
 package:
   name: fnox
@@ -7,17 +7,17 @@ package:
 
 source:
   url: https://github.com/jdx/fnox/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: c12c2b2177ead2d1ee25762eff18a876570fe3d9becf4e19ffdb185a8b1eb3c2
+  sha256: 6d8cb68ad960e4dd864211e13d2da8346336bca23ae00a4f4f67fedaf146f4ee
 
 build:
   number: 0
   script:
     env:
-      AWS_LC_SYS_CMAKE_BUILDER: ${{ "1" if host_platform == "win-arm64" else "0" }} # force CMake builder for `aws-lc-sys` native C/C++ code on `win-arm64`
+      AWS_LC_SYS_CMAKE_BUILDER: ${{ "1" if win else "0" }} # force CMake builder for `aws-lc-sys` native C/C++ code on Windows
       CARGO_PROFILE_RELEASE_LTO: ${{ "fat" if build_platform == host_platform else "thin" }} # avoid linker crashes with `fat` LTO when cross-compiling (e.g. with Apple's `ld64`) 
       CARGO_PROFILE_RELEASE_STRIP: symbols
-      OPENSSL_DIR: $PREFIX # force using host's (conda-forge's) OpenSSL lib dir (on Linux)
-      OPENSSL_NO_VENDOR: "1" # force linking to host's (conda-forge's) OpenSSL libs (on Linux)
+      OPENSSL_DIR: $PREFIX # force using host's (conda-forge's) OpenSSL lib dir (for Linux)
+      OPENSSL_NO_VENDOR: "1" # force linking to host's (conda-forge's) OpenSSL libs (for Linux)
       PKG_CONFIG_ALLOW_CROSS: "1" # ignore `pkg-config` crate's host-target mismatch safeguard to fix cross compilation
     content:
       # NOTE: we have to set LIBCLANG_PATH for bindgen to find libclang (used by aws-lc-rs)
