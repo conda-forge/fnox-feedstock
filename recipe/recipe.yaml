@@ -36,16 +36,15 @@ build:
           - let source_dll = glob ($bin_dir)/libclang-*.dll | first
           - cp $source_dll ($bin_dir)/libclang.dll
       # build main app and generate license data
-      - cargo auditable install --path=. --root=($prefix) --no-track --locked --bins
-      - cargo-bundle-licenses --format=yaml --output=THIRDPARTY.yml
+      - ^cargo auditable install --path=. --root=($prefix) --no-track --locked --bins
+      - ^cargo-bundle-licenses --format=yaml --output=THIRDPARTY.yml
       # generate shell completions
       - if: build_platform == host_platform
         then:
           - mkdir ($prefix)/share/bash-completion/completions ($prefix)/share/fish/vendor_completions.d ($prefix)/share/zsh/site-functions
-          - let bin = ($prefix)/bin/fnox
-          - ^$bin completion bash | save ($prefix)/share/bash-completion/completions/fnox
-          - ^$bin completion fish | save ($prefix)/share/fish/vendor_completions.d/fnox.fish
-          - ^$bin completion zsh  | save ($prefix)/share/zsh/site-functions/_fnox
+          - ^fnox completion bash | save ($prefix)/share/bash-completion/completions/fnox
+          - ^fnox completion fish | save ($prefix)/share/fish/vendor_completions.d/fnox.fish
+          - ^fnox completion zsh  | save ($prefix)/share/zsh/site-functions/_fnox
 
 requirements:
   build:
