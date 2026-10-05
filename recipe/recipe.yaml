@@ -21,6 +21,9 @@ build:
     interpreter: nu
     content:
       - let prefix = $env.LIBRARY_PREFIX? | default $env.PREFIX
+      # set OPENSSL_DIR on Windows since vcpkg fails to auto-detect it
+      - if: win
+        then: $env.OPENSSL_DIR = $prefix      
       # set LIBCLANG_PATH for bindgen to find libclang (used by aws-lc-rs)
       # cf. https://github.com/conda-forge/clangdev-feedstock/issues/373 & https://github.com/rust-lang/rust-bindgen/issues/918
       - if: unix
