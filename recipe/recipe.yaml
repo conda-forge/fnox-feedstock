@@ -16,7 +16,7 @@ build:
       AWS_LC_SYS_CMAKE_BUILDER: ${{ "1" if win else "0" }} # force CMake builder for `aws-lc-sys` native C/C++ code on Windows
       CARGO_PROFILE_RELEASE_LTO: ${{ "fat" if build_platform == host_platform else "thin" }} # avoid linker crashes with `fat` LTO when cross-compiling (e.g. with Apple's `ld64`) 
       CARGO_PROFILE_RELEASE_STRIP: symbols
-      OPENSSL_NO_VENDOR: "1" # force linking to host's (conda-forge's) OpenSSL libs (for Linux)
+      OPENSSL_NO_VENDOR: "1" # force linking to host's (conda-forge's) OpenSSL libs
       PKG_CONFIG_ALLOW_CROSS: "1" # ignore `pkg-config` crate's host-target mismatch safeguard to fix cross compilation
     interpreter: nu
     content:
@@ -61,10 +61,9 @@ requirements:
     - perl
     - pkg-config
   host:
+    - openssl
     - if: linux
-      then:
-        - libudev
-        - openssl
+      then: libudev
 
 tests:
   - script:
