@@ -1,5 +1,5 @@
 context:
-  version: "1.38.1"
+  version: "1.39.0"
 
 package:
   name: fnox
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/jdx/fnox/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 9adb4cf17095f9ba7408f370923d877d419eaffbd9ca1a3843212e0ccd6e173f
+  sha256: 21669929b2517e7b5425263c75c5f055220126cac1720b40549c316c92db77a9
 
 build:
   number: 0
@@ -23,7 +23,7 @@ build:
       - let prefix = $env.LIBRARY_PREFIX? | default $env.PREFIX
       # set OPENSSL_DIR on Windows since vcpkg fails to auto-detect it
       - if: win
-        then: $env.OPENSSL_DIR = $prefix      
+        then: $env.OPENSSL_DIR = $prefix
       # set LIBCLANG_PATH for bindgen to find libclang (used by aws-lc-rs)
       # cf. https://github.com/conda-forge/clangdev-feedstock/issues/373 & https://github.com/rust-lang/rust-bindgen/issues/918
       - if: unix
