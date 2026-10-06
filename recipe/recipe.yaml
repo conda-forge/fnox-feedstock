@@ -13,7 +13,7 @@ build:
   number: 0
   script:
     env:
-      AWS_LC_SYS_CMAKE_BUILDER: ${{ "1" if win else "0" }} # force CMake builder for `aws-lc-sys` native C/C++ code on Windows
+      AWS_LC_SYS_CMAKE_BUILDER: "1" # force CMake builder for `aws-lc-sys` native C/C++ code (to avoid clashing with conda-forge's CC compiler flags when building `jitterentropy.c`)
       CARGO_PROFILE_RELEASE_LTO: ${{ "fat" if build_platform == host_platform else "thin" }} # avoid linker crashes with `fat` LTO when cross-compiling (e.g. with Apple's `ld64`) 
       CARGO_PROFILE_RELEASE_STRIP: symbols
       OPENSSL_NO_VENDOR: "1" # force linking to host's (conda-forge's) OpenSSL libs
