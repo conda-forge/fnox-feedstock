@@ -1,5 +1,5 @@
 context:
-  version: "1.39.0"
+  version: "1.40.0"
 
 package:
   name: fnox
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/jdx/fnox/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 21669929b2517e7b5425263c75c5f055220126cac1720b40549c316c92db77a9
+  sha256: 9e3853e884f59591bd136d954d921a0910c14d5d336d7ab622771e9e13f7dc4b
 
 build:
   number: 0
@@ -24,6 +24,12 @@ build:
       # set OPENSSL_DIR on Windows since vcpkg fails to auto-detect it
       - if: win
         then: $env.OPENSSL_DIR = $prefix
+      # when cross-compiling to win-arm64, `CC` points to the arm64-targeting `cl.exe`, which `cc-rs` would
+      # wrongly also use for host (x64) build scripts/proc-macro deps (e.g. `stacker`'s `windows.c`)
+      - if: win and build_platform != host_platform
+        then:
+          - $env.CC_x86_64_pc_windows_msvc = "clang-cl"
+          - $env.CXX_x86_64_pc_windows_msvc = "clang-cl"
       # set LIBCLANG_PATH for bindgen to find libclang (used by aws-lc-rs)
       # cf. https://github.com/conda-forge/clangdev-feedstock/issues/373 & https://github.com/rust-lang/rust-bindgen/issues/918
       - if: unix
