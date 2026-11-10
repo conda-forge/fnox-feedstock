@@ -69,6 +69,8 @@ requirements:
     - nushell
     - perl
     - pkg-config
+    - if: osx
+      then: nodejs
   host:
     - openssl
     - if: linux
