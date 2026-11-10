@@ -1,2 +1,8 @@
-c_stdlib_version:  # [linux]
-  - "2.34"         # [linux]
+c_stdlib_version:    # [linux]
+  - "2.34"           # [linux]
+nodejs:
+  - '*'
+
+# `NSApplication -activate` needs the macOS 14+ SDK (used by fnox's Touch ID approval prompt)
+MACOSX_SDK_VERSION:  # [osx]
+  - "15.5"           # [osx]
