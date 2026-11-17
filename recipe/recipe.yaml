@@ -68,7 +68,7 @@ requirements:
     - ninja
     - nushell
     - perl
-    - pkg-config
+    - pkgconf
     - if: osx
       then: nodejs
   host:
